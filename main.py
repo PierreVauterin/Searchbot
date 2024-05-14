@@ -48,7 +48,7 @@ class App(customtkinter.CTk):
         super().__init__()
         bot = Bot("", "", 1.0,"")
         # configure window
-        self.title("Search bot V3.2")
+        self.title("Search bot V4.0")
         self.geometry(f"{1200}x{600}")
 
         # configure grid layout (4x4)
