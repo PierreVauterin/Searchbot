@@ -1,8 +1,7 @@
 import tkinter.messagebox
 import customtkinter
 from tkinter import filedialog
-from functionsForInterfaceSyn import extractSyn
-from functionsForInterfaceRoot import extractRoot
+from search import extract
 import os
 import sys
 
@@ -37,8 +36,8 @@ def getQuery(entryField,bot,displayField,button):
     if(bot.query!="" and bot.directory!=""):
         displayField.configure(state="normal") # We unlock the text field so that the function can write inside
         displayField.delete("1.0","end") #We remove everything that was written, so that we do not have to scroll to see the new results
-        if(button.get()=="Synonyms"):extractSyn(bot,displayField)
-        else:extractRoot(bot,displayField)
+        if(button.get()=="Synonyms"):extract(bot,displayField,"synonyms")
+        else:extract(bot,displayField,"root")
         displayField.configure(state="disabled") # We lock it after so that the text will not be modified accidentally
     elif(bot.query!="" and bot.directory==""):tkinter.messagebox.showerror("No database selected", "Please choose a database directory before sending a query")
     elif(bot.query=="" and bot.directory!=""):tkinter.messagebox.showerror("No keyword given", "Please write a query before sending it")
