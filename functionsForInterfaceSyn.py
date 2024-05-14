@@ -46,8 +46,8 @@ def extract_text_from_pdf(pdf_file_path,listKeywords,filename,bot,date):
     doc = fitz.open(pdf_file_path)
     fontsize=30
     res,outputCreated,outputModified,firstModification,pagesKeyword= "",False,False,True,[]
-    outputExists=os.path.isfile(bot.output+"/COWI_BOT_"+bot.query+"_"+date+".pdf")
-    if(outputExists):output=fitz.open(bot.output+"/COWI_BOT_"+bot.query+"_"+date+".pdf")
+    outputExists=os.path.isfile(bot.output+"/BOT_"+bot.query+"_"+date+".pdf")
+    if(outputExists):output=fitz.open(bot.output+"/BOT_"+bot.query+"_"+date+".pdf")
     for page in doc:
         page_text = page.get_text()
         lines = page_text.split('\n')
@@ -72,10 +72,10 @@ def extract_text_from_pdf(pdf_file_path,listKeywords,filename,bot,date):
                 watermark="{filename}-page {pageNumber}".format(filename=filename[:30],pageNumber=page.number+1)
                 output[len(output)-1].insert_text((fitz.get_text_length(watermark, fontname="helv", fontsize=5)/2, 10), watermark)
     if(outputCreated):
-        output.save(bot.output+"/COWI_BOT_"+bot.query+"_"+date+".pdf")
+        output.save(bot.output+"/BOT_"+bot.query+"_"+date+".pdf")
         output.close()
     elif(outputModified):
-        output.save(bot.output+"/COWI_BOT_"+bot.query+"_"+date+".pdf",incremental=True,encryption=0)
+        output.save(bot.output+"/BOT_"+bot.query+"_"+date+".pdf",incremental=True,encryption=0)
         output.close()
     doc.close()
     return re.sub(r"\n(?![A-Z])", "", res)
@@ -97,13 +97,13 @@ def extractSyn(bot,canva):
             path=os.path.normpath(path)
             textList.append(extract_text_from_pdf(path,question,filename,bot,date))
             fileList.append(filename)
-    if(os.path.isfile(bot.output+"/COWI_BOT_"+bot.query+"_"+date+".pdf")):
-        output=fitz.open(bot.output+"/COWI_BOT_"+bot.query+"_"+date+".pdf")
+    if(os.path.isfile(bot.output+"/BOT_"+bot.query+"_"+date+".pdf")):
+        output=fitz.open(bot.output+"/BOT_"+bot.query+"_"+date+".pdf")
         for page in output:
             for keyword in question:
                 matches=page.search_for(keyword+" ")
                 page.add_highlight_annot(matches)
-        output.save(bot.output+"/COWI_BOT_"+bot.query+"_"+date+".pdf",incremental=True,encryption=0)
+        output.save(bot.output+"/BOT_"+bot.query+"_"+date+".pdf",incremental=True,encryption=0)
         output.close()
         tkinter.messagebox.showinfo(title="File ready", message="Your file has been saved in "+bot.output+"/COWI_BOT_"+bot.query+"_"+date+".pdf")
     occurrences,usefulFiles=0,[]
