@@ -1,14 +1,17 @@
 import os
 import fitz
 import re
+import tkinter as tk
+from tkinter.ttk import Progressbar
 from tkinter import filedialog
 import nltk
 from nltk.corpus import wordnet
 from nltk.stem import PorterStemmer
 import datetime
 import tkinter.messagebox
+import time
 
-def colorText(canva,listKeywords):
+def colorText(canva,listKeywords:list[str])->None:
     for keyword in listKeywords:
         start_index = "1.0"
         while True:
@@ -31,7 +34,7 @@ def findSynonyms(keyword):
         if(val[-1]!="S"):listKeyword.append(val+"S")# So that plurals are detected too
     return listKeyword
 
-def findKeyword(keyword, text,search):
+def findKeyword(keyword:list[str],text,search:str) -> list[str]:
     found_sentences = []
     sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|\n)(?=\s|[A-Z])', text)
     for sentence in sentences:
@@ -43,10 +46,9 @@ def findKeyword(keyword, text,search):
                 if re.search(pattern, sentence):
                     found_sentences.append(sentence)
                     continue #We do not want the same sentence to be analyzed for each synonym, processing will be faster
-    if len(found_sentences) == 0:found_sentences = 0
     return found_sentences
 
-def extract_text_from_pdf(pdf_file_path,listKeywords,filename,bot,date,search):
+def extract_text_from_pdf(pdf_file_path:str,listKeywords:list[str],filename:str,bot,date:str,search:str):
     doc = fitz.open(pdf_file_path)
     fontsize=30
     res,outputCreated,outputModified,firstModification,pagesKeyword= "",False,False,True,[]
@@ -58,7 +60,7 @@ def extract_text_from_pdf(pdf_file_path,listKeywords,filename,bot,date,search):
         sanitized_lines = [line for line in lines if not line.strip().isdigit()]
         sanitized_text = '\n'.join(sanitized_lines)
         res += sanitized_text
-        if(findKeyword(listKeywords,sanitized_text,search)!=0):
+        if(len(findKeyword(listKeywords,sanitized_text,search))!=0):
             if(not outputExists):
                 output=fitz.open()
                 outputCreated=True
@@ -84,12 +86,12 @@ def extract_text_from_pdf(pdf_file_path,listKeywords,filename,bot,date,search):
     doc.close()
     return re.sub(r"\n(?![A-Z])", "", res)
         
-def keywordInColor(keyword, sentence,canva,bot):
+def formatSentence(keyword:list[str],sentence,canva,bot) -> None:
     modified_sentence = sentence
     for val in keyword:modified_sentence = re.sub(r'\b{}\b'.format(re.escape(val)), f'{val}', modified_sentence, flags=re.IGNORECASE)
     displayText(modified_sentence + "\n",canva,bot)
     
-def extract(bot,canva,search):
+def extract(bot,canva,search:str) -> int:
     displayText("Looking for {word} in the database, please wait...\n".format(word=bot.query),canva,bot)
     textList,fileList=[],[]
     date = str(datetime.datetime.today().replace(microsecond=0)).replace(" ","_").replace(":","_")
@@ -109,20 +111,20 @@ def extract(bot,canva,search):
         for page in output:
             for keyword in question:
                 matches=page.search_for(keyword+" ")
-                page.add_highlight_annot(matches)
+                page.add_highlight_annot(matches) # A modifier
         output.save(bot.output+"/BOT_"+bot.query+"_"+date+".pdf",incremental=True,encryption=0)
         output.close()
         tkinter.messagebox.showinfo(title="File ready", message="Your file has been saved in "+bot.output+"/COWI_BOT_"+bot.query+"_"+date+".pdf")
     occurrences,usefulFiles=0,[]
     for i in range(len(textList)):
         sentence=findKeyword(question,textList[i],search)
-        if(sentence==0):continue
+        if(len(sentence)==0):continue
         else:
             usefulFiles.append(fileList[i])
             displayText("--------------------------------------------------"+fileList[i]+"--------------------------------------------------------------\n",canva,bot)
             occurrences+=len(sentence)
             for j in range(len(sentence)):
-                keywordInColor(question,sentence[j],canva,bot)
+                formatSentence(question,sentence[j],canva,bot)
                 displayText("\n\n",canva,bot)
     displayText("Total occurrences of the keyword found: {occurences}".format(occurences=occurrences),canva,bot)
     bot.yToPrint+=3.0
