@@ -93,7 +93,7 @@ class App(customtkinter.CTk):
         self.search_optionemenu.set("Synonyms")
 
         # Set shortcuts
-        self.bind("<Escape>", lambda e: self.onClosing(self, e)) #Does not work?
+        self.bind("<Escape>", lambda e: self.onClosing(self))
         self.protocol("WM_DELETE_WINDOW", lambda: self.onClosing(self))
         self.bind("<Return>", lambda e: getQuery(self.entry,bot,self.textbox,self.search_optionemenu))
 
