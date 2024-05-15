@@ -11,14 +11,30 @@ import datetime
 import tkinter.messagebox
 import time
 
-def colorText(canva,listKeywords:list[str]) -> None:
-    for keyword in listKeywords:
+def colorText(canva,listKeywords:list[str],search:str) -> None:
+    if(search=="root"):
         start_index = "1.0"
         while True:
-            index = canva.search(keyword, start_index, stopindex="end")
+            index = canva.search(listKeywords[0], start_index, stopindex="end", nocase=True)
             if not index:break
-            canva.tag_add("color", index, f"{index}+{len(keyword)}c")
-            start_index = f"{index}+{len(keyword)}c"
+            word_end_index = canva.search(" ", f"{index}+1c", stopindex="end")
+            if not word_end_index:word_end_index = "end"
+            content = canva.get(index, word_end_index)
+            uppercase_content = content.upper()
+            canva.delete(index, word_end_index)
+            canva.insert(index, uppercase_content)
+            canva.tag_add("color", index, f"{index}+{len(listKeywords[0])}c")
+            copyIndex = start_index
+            start_index = f"{index}+{len(listKeywords[0])}c"
+            if start_index == copyIndex:break
+    else:
+        for keyword in listKeywords:
+            start_index = "1.0"
+            while True:
+                index = canva.search(keyword, start_index, stopindex="end")
+                if not index:break
+                canva.tag_add("color", index, f"{index}+{len(keyword)}c")
+                start_index = f"{index}+{len(keyword)}c"
     canva.tag_config("color", foreground="red") # Maybe find a way to adapt this color to the current color scheme of the window
 
 def searchFiles(bot,keywords,date,search,textList,fileList):
@@ -35,7 +51,7 @@ def highlightText(bot,date,question) -> None:
     for page in output:
         for keyword in question:
             matches=page.search_for(keyword)
-            page.add_highlight_annot(matches) # A modifier
+            page.add_highlight_annot(matches)
     output.save(bot.output+"/BOT_"+bot.query+"_"+date+".pdf",incremental=True,encryption=0)
     output.close()
 
@@ -135,6 +151,6 @@ def extract(bot,canva,search:str) -> int:
     displayText("Total occurrences of the keyword found: {occurences}".format(occurences=occurrences),canva,bot)
     bot.yToPrint+=3.0
     if(occurrences!=0):
-        colorText(canva,question)
+        colorText(canva,question,search)
         bot.yToPrint+=5.0
     return 1
