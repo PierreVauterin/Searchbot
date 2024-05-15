@@ -9,8 +9,8 @@ from nltk.corpus import wordnet
 from nltk.stem import PorterStemmer
 import datetime
 import tkinter.messagebox
-import time
-from progressbar import createProgressBar,findKeyword
+from progressbar import createProgressBar
+from fileHandling import findKeyword
 
 
 def colorText(canva,listKeywords:list[str],search:str) -> None:
@@ -75,11 +75,9 @@ def extract(bot,canva,search:str) -> int:
         question.append(PorterStemmer().stem(bot.query).upper())
     else:question=findSynonyms(bot.query)
     createProgressBar(bot,question,date,search,textList,fileList)
-    print("Ca continue")
     if(os.path.isfile(bot.output+"/BOT_"+bot.query+"_"+date+".pdf")):
         highlightText(bot,date,question)
         tkinter.messagebox.showinfo(title="File ready", message="Your file has been saved in "+bot.output+"/COWI_BOT_"+bot.query+"_"+date+".pdf")
-    else:print("Mais ca plante")
     occurrences,usefulFiles=0,[]
     for i in range(len(textList)):
         sentence=findKeyword(question,textList[i],search)
