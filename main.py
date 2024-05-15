@@ -9,11 +9,12 @@ customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
 class Bot:
-    def __init__(self, directory, query,yToPrint,output):
+    def __init__(self, directory, query,yToPrint,output,numberFiles):
         self.directory=directory
         self.query=query
         self.yToPrint=yToPrint
         self.output=output
+        self.numberFiles=numberFiles
         
 def searchDir(bot,botDirectoryLabel):
     tkinter.Tk().withdraw()
@@ -26,7 +27,9 @@ def searchDir(bot,botDirectoryLabel):
         if(fileCount==0):
             tkinter.messagebox.showerror("No PDFs", "There are no PDF files in this directory, please choose another directory")
             bot.directory=""
-        else:bot.output=filedialog.askdirectory(title="Indicate folder to save output in")
+        else:
+            bot.numberFiles=fileCount
+            bot.output=filedialog.askdirectory(title="Indicate folder to save output in")
     except FileNotFoundError:bot.directory=""
     if(bot.output==""):bot.output=bot.directory
     botDirectoryLabel.configure(text="Directory chosen: "+bot.directory)
@@ -46,7 +49,7 @@ def getQuery(entryField,bot,displayField,button):
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
-        bot = Bot("", "", 1.0,"")
+        bot = Bot("", "", 1.0,"",0)
         # configure window
         self.title("Search bot V4.0")
         self.geometry(f"{1200}x{600}")
