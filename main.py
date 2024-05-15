@@ -17,7 +17,7 @@ class Bot:
         
 def searchDir(bot,botDirectoryLabel):
     tkinter.Tk().withdraw()
-    bot.directory=filedialog.askdirectory()
+    bot.directory=filedialog.askdirectory(title="Indicate database directory")
     try:
         fileCount=0
         for root,directories,files in os.walk(bot.directory):
@@ -26,7 +26,7 @@ def searchDir(bot,botDirectoryLabel):
         if(fileCount==0):
             tkinter.messagebox.showerror("No PDFs", "There are no PDF files in this directory, please choose another directory")
             bot.directory=""
-        else:bot.output=filedialog.askdirectory()
+        else:bot.output=filedialog.askdirectory(title="Indicate folder to save output in")
     except FileNotFoundError:bot.directory=""
     if(bot.output==""):bot.output=bot.directory
     botDirectoryLabel.configure(text="Directory chosen: "+bot.directory)
