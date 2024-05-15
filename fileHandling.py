@@ -1,6 +1,7 @@
 import os
 import fitz
 import re
+from nltk.stem import PorterStemmer
 
 def extract_text_from_pdf(pdf_file_path:str,listKeywords:list[str],filename:str,bot,date:str,search:str):
     doc = fitz.open(pdf_file_path)
