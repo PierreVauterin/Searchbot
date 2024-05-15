@@ -11,7 +11,7 @@ import datetime
 import tkinter.messagebox
 import time
 
-def colorText(canva,listKeywords:list[str])->None:
+def colorText(canva,listKeywords:list[str]) -> None:
     for keyword in listKeywords:
         start_index = "1.0"
         while True:
@@ -20,6 +20,15 @@ def colorText(canva,listKeywords:list[str])->None:
             canva.tag_add("color", index, f"{index}+{len(keyword)}c")
             start_index = f"{index}+{len(keyword)}c"
     canva.tag_config("color", foreground="red") # Maybe find a way to adapt this color to the current color scheme of the window
+
+def highlightText(bot,date,question) -> None:
+    output=fitz.open(bot.output+"/BOT_"+bot.query+"_"+date+".pdf")
+    for page in output:
+        for keyword in question:
+            matches=page.search_for(keyword)
+            page.add_highlight_annot(matches) # A modifier
+    output.save(bot.output+"/BOT_"+bot.query+"_"+date+".pdf",incremental=True,encryption=0)
+    output.close()
 
 def displayText(toDisplay,canva,bot):
     canva.insert(str(bot.yToPrint),text=toDisplay.strip()+"\n")
@@ -107,13 +116,7 @@ def extract(bot,canva,search:str) -> int:
             textList.append(extract_text_from_pdf(path,question,filename,bot,date,search))
             fileList.append(filename)
     if(os.path.isfile(bot.output+"/BOT_"+bot.query+"_"+date+".pdf")):
-        output=fitz.open(bot.output+"/BOT_"+bot.query+"_"+date+".pdf")
-        for page in output:
-            for keyword in question:
-                matches=page.search_for(keyword+" ")
-                page.add_highlight_annot(matches) # A modifier
-        output.save(bot.output+"/BOT_"+bot.query+"_"+date+".pdf",incremental=True,encryption=0)
-        output.close()
+        highlightText(bot,date,question)
         tkinter.messagebox.showinfo(title="File ready", message="Your file has been saved in "+bot.output+"/COWI_BOT_"+bot.query+"_"+date+".pdf")
     occurrences,usefulFiles=0,[]
     for i in range(len(textList)):
@@ -121,7 +124,7 @@ def extract(bot,canva,search:str) -> int:
         if(len(sentence)==0):continue
         else:
             usefulFiles.append(fileList[i])
-            displayText("--------------------------------------------------"+fileList[i]+"--------------------------------------------------------------\n",canva,bot)
+            displayText("--------------------------------------------------"+fileList[i]+"--------------------------------------------------------------\n\n",canva,bot)
             occurrences+=len(sentence)
             for j in range(len(sentence)):
                 formatSentence(question,sentence[j],canva,bot)
