@@ -10,6 +10,8 @@ from nltk.stem import PorterStemmer
 import datetime
 import tkinter.messagebox
 import time
+from progressbar import createProgressBar,findKeyword
+
 
 def colorText(canva,listKeywords:list[str],search:str) -> None:
     if(search=="root"):
@@ -35,16 +37,7 @@ def colorText(canva,listKeywords:list[str],search:str) -> None:
                 if not index:break
                 canva.tag_add("color", index, f"{index}+{len(keyword)}c")
                 start_index = f"{index}+{len(keyword)}c"
-    canva.tag_config("color", foreground="red") # Maybe find a way to adapt this color to the current color scheme of the window
-
-def searchFiles(bot,keywords,date,search,textList,fileList):
-    for pathSearch,subdirs,files in os.walk(bot.directory):
-        for filename in files:
-            if(filename[-4:]!=".pdf"):continue # We only read PDFs, then we do not take into account other formats
-            path = os.path.join(pathSearch, filename)
-            path=os.path.normpath(path)
-            textList.append(extract_text_from_pdf(path,keywords,filename,bot,date,search))
-            fileList.append(filename)
+    canva.tag_config("color", foreground="red") # Maybe find a way to adapt this color to the current color scheme of the window*
 
 def highlightText(bot,date,question) -> None:
     output=fitz.open(bot.output+"/BOT_"+bot.query+"_"+date+".pdf")
@@ -67,58 +60,6 @@ def findSynonyms(keyword):
     for val in listKeyword:
         if(val[-1]!="S"):listKeyword.append(val+"S")# So that plurals are detected too
     return listKeyword
-
-def findKeyword(keyword:list[str],text,search:str) -> list[str]:
-    found_sentences = []
-    sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|\n)(?=\s|[A-Z])', text)
-    for sentence in sentences:
-        if(search=="root"):
-            if(keyword[0] in PorterStemmer().stem(sentence).upper()):found_sentences.append(sentence)
-        else:
-            for val in keyword:
-                pattern = re.compile(fr'\b{re.escape(val)}\b', re.IGNORECASE)
-                if re.search(pattern, sentence):
-                    found_sentences.append(sentence)
-                    continue #We do not want the same sentence to be analyzed for each synonym, processing will be faster
-    return found_sentences
-
-def extract_text_from_pdf(pdf_file_path:str,listKeywords:list[str],filename:str,bot,date:str,search:str):
-    doc = fitz.open(pdf_file_path)
-    fontsize=30
-    res,outputCreated,outputModified,firstModification,pagesKeyword= "",False,False,True,[]
-    outputExists=os.path.isfile(bot.output+"/BOT_"+bot.query+"_"+date+".pdf")
-    if(outputExists):output=fitz.open(bot.output+"/BOT_"+bot.query+"_"+date+".pdf")
-    for page in doc:
-        page_text = page.get_text()
-        lines = page_text.split('\n')
-        sanitized_lines = [line for line in lines if not line.strip().isdigit()]
-        sanitized_text = '\n'.join(sanitized_lines)
-        res += sanitized_text
-        if(len(findKeyword(listKeywords,sanitized_text,search))!=0):
-            if(not outputExists):
-                output=fitz.open()
-                outputCreated=True
-                outputExists=True
-            if(firstModification):
-                newPage=output.new_page(len(output))
-                textLength = fitz.get_text_length(filename[:30], fontname="helv", fontsize=fontsize)
-                newPage.insert_text(fitz.Point((newPage.mediabox.width-textLength)/2,(newPage.mediabox.height-textLength)/2),filename[:30],fontsize=fontsize)
-                firstModification=False
-            if(page.number not in pagesKeyword):
-                pagesKeyword.append(page.number)
-                page.clean_contents()
-                output.insert_pdf(doc, from_page=page.number, to_page=page.number)
-                outputModified=True
-                watermark="{filename}-page {pageNumber}".format(filename=filename[:30],pageNumber=page.number+1)
-                output[len(output)-1].insert_text((fitz.get_text_length(watermark, fontname="helv", fontsize=5)/2, 10), watermark)
-    if(outputCreated):
-        output.save(bot.output+"/BOT_"+bot.query+"_"+date+".pdf")
-        output.close()
-    elif(outputModified):
-        output.save(bot.output+"/BOT_"+bot.query+"_"+date+".pdf",incremental=True,encryption=0)
-        output.close()
-    doc.close()
-    return re.sub(r"\n(?![A-Z])", "", res)
         
 def formatSentence(keyword:list[str],sentence,canva,bot) -> None:
     modified_sentence = sentence
@@ -133,10 +74,12 @@ def extract(bot,canva,search:str) -> int:
         question=[]
         question.append(PorterStemmer().stem(bot.query).upper())
     else:question=findSynonyms(bot.query)
-    searchFiles(bot,question,date,search,textList,fileList)
+    createProgressBar(bot,question,date,search,textList,fileList)
+    print("Ca continue")
     if(os.path.isfile(bot.output+"/BOT_"+bot.query+"_"+date+".pdf")):
         highlightText(bot,date,question)
         tkinter.messagebox.showinfo(title="File ready", message="Your file has been saved in "+bot.output+"/COWI_BOT_"+bot.query+"_"+date+".pdf")
+    else:print("Mais ca plante")
     occurrences,usefulFiles=0,[]
     for i in range(len(textList)):
         sentence=findKeyword(question,textList[i],search)
