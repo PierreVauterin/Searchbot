@@ -50,7 +50,7 @@ def getQuery(entryField,bot,displayField,button):
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
-        bot = Bot("", "", 1.0,"",0,("Light","blue"))
+        bot = Bot("", "", 1.0,"",0,["Light","blue"])
         # configure window
         self.title("Search bot V4.0")
         self.geometry(f"{1200}x{600}")
@@ -69,7 +69,7 @@ class App(customtkinter.CTk):
         self.appearance_mode_label = customtkinter.CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
         self.appearance_mode_label.grid(row=5, column=0, padx=20, pady=(10, 0))
         self.appearance_mode_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Light", "Dark", "System"],
-                                                                       command=self.change_appearance_mode_event)
+                                                                       command=lambda mode: self.change_appearance_mode_event(mode,bot))
         self.appearance_mode_optionemenu.grid(row=6, column=0, padx=20, pady=(10, 10))
         self.search_label = customtkinter.CTkLabel(self.sidebar_frame, text="Type of search:", anchor="w")
         self.search_label.grid(row=1, column=0, padx=20, pady=(10, 0))
@@ -101,7 +101,7 @@ class App(customtkinter.CTk):
         self.protocol("WM_DELETE_WINDOW", lambda: self.onClosing(self))
         self.bind("<Return>", lambda e: getQuery(self.entry,bot,self.textbox,self.search_optionemenu))
 
-    def change_appearance_mode_event(self, new_appearance_mode: str):
+    def change_appearance_mode_event(self, new_appearance_mode: str, bot):
         bot.colorTheme[0]=new_appearance_mode
         customtkinter.set_appearance_mode(new_appearance_mode)
         
