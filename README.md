@@ -9,6 +9,7 @@ The V4 brings several improvements:
 
 - Fixed highlighting problems in the output file for the root search
 - Fixed coloration problems on the console for the root search
+- Fixed automatic switch to darkmode when opening the progressbar window
 
 # Details
 
