@@ -1,7 +1,6 @@
 import customtkinter
 import os
 from fileHandling import extract_text_from_pdf
-import time
 
 def clicker():
     testProgress.step()
@@ -45,5 +44,4 @@ def processFiles(testProgress,root,label,bot,keywords,date,search,textList,fileL
             root.update_idletasks()
             label.configure(text="Files processed: "+str(i+1)+"/"+str(bot.numberFiles))
     testProgress.stop()
-    time.sleep(2)
     onClosing(root)
