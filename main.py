@@ -5,19 +5,21 @@ from search import extract
 import os
 import sys
 
-customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
+customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
 class Bot:
-    def __init__(self, directory, query,yToPrint,output):
+    def __init__(self, directory, query,yToPrint,output,numberFiles,colorTheme):
         self.directory=directory
         self.query=query
         self.yToPrint=yToPrint
         self.output=output
+        self.numberFiles=numberFiles
+        self.colorTheme=colorTheme
         
 def searchDir(bot,botDirectoryLabel):
     tkinter.Tk().withdraw()
-    bot.directory=filedialog.askdirectory()
+    bot.directory=filedialog.askdirectory(title="Indicate database directory")
     try:
         fileCount=0
         for root,directories,files in os.walk(bot.directory):
@@ -26,7 +28,9 @@ def searchDir(bot,botDirectoryLabel):
         if(fileCount==0):
             tkinter.messagebox.showerror("No PDFs", "There are no PDF files in this directory, please choose another directory")
             bot.directory=""
-        else:bot.output=filedialog.askdirectory()
+        else:
+            bot.numberFiles=fileCount
+            bot.output=filedialog.askdirectory(title="Indicate folder to save output in")
     except FileNotFoundError:bot.directory=""
     if(bot.output==""):bot.output=bot.directory
     botDirectoryLabel.configure(text="Directory chosen: "+bot.directory)
@@ -46,7 +50,7 @@ def getQuery(entryField,bot,displayField,button):
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
-        bot = Bot("", "", 1.0,"")
+        bot = Bot("", "", 1.0,"",0,["Light","blue"])
         # configure window
         self.title("Search bot V4.0")
         self.geometry(f"{1200}x{600}")
@@ -65,7 +69,7 @@ class App(customtkinter.CTk):
         self.appearance_mode_label = customtkinter.CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
         self.appearance_mode_label.grid(row=5, column=0, padx=20, pady=(10, 0))
         self.appearance_mode_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Light", "Dark", "System"],
-                                                                       command=self.change_appearance_mode_event)
+                                                                       command=lambda mode: self.change_appearance_mode_event(mode,bot))
         self.appearance_mode_optionemenu.grid(row=6, column=0, padx=20, pady=(10, 10))
         self.search_label = customtkinter.CTkLabel(self.sidebar_frame, text="Type of search:", anchor="w")
         self.search_label.grid(row=1, column=0, padx=20, pady=(10, 0))
@@ -93,11 +97,12 @@ class App(customtkinter.CTk):
         self.search_optionemenu.set("Synonyms")
 
         # Set shortcuts
-        self.bind("<Escape>", lambda e: self.onClosing(self, e)) #Does not work?
+        self.bind("<Escape>", lambda e: self.onClosing(self))
         self.protocol("WM_DELETE_WINDOW", lambda: self.onClosing(self))
         self.bind("<Return>", lambda e: getQuery(self.entry,bot,self.textbox,self.search_optionemenu))
 
-    def change_appearance_mode_event(self, new_appearance_mode: str):
+    def change_appearance_mode_event(self, new_appearance_mode: str, bot):
+        bot.colorTheme[0]=new_appearance_mode
         customtkinter.set_appearance_mode(new_appearance_mode)
         
     def onClosing(self,e=None):
