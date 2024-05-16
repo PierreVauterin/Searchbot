@@ -1,17 +1,17 @@
-# Presentation
+# Improvements
 
-This is the Searchbot, a small tool which makes researches in large databases faster. You can ask it to search keyword occurrences in a database composed of any number of files and folders you want, and it will output the search on its screen and in a PDF file composed of all the pages of the documents in which the keyword appears in.
-This tool is still in active development, if you encounter issues, or if you have requests, feal free to create an issue on this repository, and I will do my best to tackle it.
+The V4 brings several improvements:
+- Reworking of the file system: merged both synonyms and root files into one
+- Progress bar: this shows the progress of the research, instead of having no informations
+- Help button (not implemented for now): this opens the documentation, explaining how the tool works
 
-# How to use it
+# Bug solving
 
-Sending a query to the bot is made in 3 steps:
-- Choose the type of search you want (Synonym or Root search)
-- Enter the keyword you are looking for in the query field
-- Choose both database directory and output directory
+- Fixed highlighting problems in the output file for the root search
+- Fixed coloration problems on the console for the root search
+- Fixed automatic switch to darkmode when opening the progressbar window
 
-# Current limitations
+# Details
 
-Here is a list of the limitations of the tool, which will be tackled by the following updates:
-- Only PDFs files are being scanned by the tool
-- There is no help button to get access to the documentation
+- Added titles explaining what directory you are looking for when one directory search window is opened
+
