@@ -5,16 +5,17 @@ from search import extract
 import os
 import sys
 
-customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
+customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
 class Bot:
-    def __init__(self, directory, query,yToPrint,output,numberFiles):
+    def __init__(self, directory, query,yToPrint,output,numberFiles,colorTheme):
         self.directory=directory
         self.query=query
         self.yToPrint=yToPrint
         self.output=output
         self.numberFiles=numberFiles
+        self.colorTheme=colorTheme
         
 def searchDir(bot,botDirectoryLabel):
     tkinter.Tk().withdraw()
@@ -49,7 +50,7 @@ def getQuery(entryField,bot,displayField,button):
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
-        bot = Bot("", "", 1.0,"",0)
+        bot = Bot("", "", 1.0,"",0,("Light","blue"))
         # configure window
         self.title("Search bot V4.0")
         self.geometry(f"{1200}x{600}")
@@ -101,6 +102,7 @@ class App(customtkinter.CTk):
         self.bind("<Return>", lambda e: getQuery(self.entry,bot,self.textbox,self.search_optionemenu))
 
     def change_appearance_mode_event(self, new_appearance_mode: str):
+        bot.colorTheme[0]=new_appearance_mode
         customtkinter.set_appearance_mode(new_appearance_mode)
         
     def onClosing(self,e=None):
