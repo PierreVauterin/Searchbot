@@ -14,4 +14,3 @@ Sending a query to the bot is made in 3 steps:
 
 Here is a list of the limitations of the tool, which will be tackled by the following updates:
 - Only PDFs files are being scanned by the tool
-- There is no help button to get access to the documentation
