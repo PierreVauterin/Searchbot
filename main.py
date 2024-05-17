@@ -4,6 +4,7 @@ from tkinter import filedialog
 from search import extract
 import os
 import sys
+import webbrowser
 
 customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -16,8 +17,13 @@ class Bot:
         self.output=output
         self.numberFiles=numberFiles
         self.colorTheme=colorTheme
-        
-def searchDir(bot,botDirectoryLabel):
+
+def getHelp():
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    pdf_path = os.path.join(current_dir, "SearchbotHelp.pdf")
+    webbrowser.open(f"file://{pdf_path}")
+
+def searchDir(bot):
     tkinter.Tk().withdraw()
     bot.directory=filedialog.askdirectory(title="Indicate database directory")
     try:
@@ -33,7 +39,6 @@ def searchDir(bot,botDirectoryLabel):
             bot.output=filedialog.askdirectory(title="Indicate folder to save output in")
     except FileNotFoundError:bot.directory=""
     if(bot.output==""):bot.output=bot.directory
-    botDirectoryLabel.configure(text="Directory chosen: "+bot.directory)
 
 def getQuery(entryField,bot,displayField,button):
     bot.query=entryField.get().upper()
@@ -76,21 +81,21 @@ class App(customtkinter.CTk):
         self.search_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Synonyms", "Root search"])
         self.search_optionemenu.grid(row=2, column=0, padx=20, pady=(10, 20))
 
-        # create main entry and button
-        botDirectoryLabel = customtkinter.CTkLabel(master=self,text="No database directory selected for now",fg_color="transparent")
-        botDirectoryLabel.grid(row=2, column=1, columnspan=2, padx=(20, 0), pady=(10, 10), sticky="nsew")
-        
-        selectDirectory = customtkinter.CTkButton(master=self,text="Select database & output folder",fg_color="#3A7EBF", border_width=2, text_color="white", command=lambda: searchDir(bot, botDirectoryLabel))
+        # create main entry and buttons
+        selectDirectory = customtkinter.CTkButton(master=self,text="Select database & output folders",fg_color="#3A7EBF", border_width=2, text_color="white", command=lambda: searchDir(bot))
         selectDirectory.grid(row=2, column=3, padx=(20, 20), pady=(20, 20), sticky="nsew")
         
         self.entry = customtkinter.CTkEntry(self, placeholder_text="Please enter the keyword here",fg_color=("grey90","black"))
-        self.entry.grid(row=3, column=1, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+        self.entry.grid(row=3, column=1, padx=(20, 0), pady=(20, 20), sticky="nsew")
         
         self.main_button_1 = customtkinter.CTkButton(master=self, fg_color="#3A7EBF", border_width=2, text_color="white",text="Send query",command=lambda: getQuery(self.entry, bot,self.textbox,self.search_optionemenu))
         self.main_button_1.grid(row=3, column=3, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
+        self.help_button = customtkinter.CTkButton(master=self, fg_color="#3A7EBF", border_width=2, text_color="white",text="Get help",command=lambda: getHelp())
+        self.help_button.grid(row=2, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
+
         self.textbox = customtkinter.CTkTextbox(self, width=250,height=450,state="disabled",border_color="grey",border_width=2,fg_color=("white","black"))
-        self.textbox.grid(row=0, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
+        self.textbox.grid(row=0, column=1,rowspan=3, padx=(20, 0), pady=(20, 0), sticky="nsew")
 
         # set default values
         self.appearance_mode_optionemenu.set("Light")
