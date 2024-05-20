@@ -2,10 +2,6 @@ import customtkinter
 import os
 from fileHandling import extract_text_from_pdf
 
-def clicker():
-    testProgress.step()
-    theLabel.configure(text=testProgress.get())
-
 def onClosing(window,e=None):window.quit()
 
 def createProgressBar(bot,keywords,date,search,textList,fileList):
