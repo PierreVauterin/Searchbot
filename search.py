@@ -70,10 +70,9 @@ def extract(bot,canva,search:str) -> int:
     displayText("Looking for {word} in the database, please wait...\n".format(word=bot.query),canva,bot)
     textList,fileList=[],[]
     date = str(datetime.datetime.today().replace(microsecond=0)).replace(" ","_").replace(":","_")
-    if(search=="root"):
-        question=[]
-        question.append(PorterStemmer().stem(bot.query).upper())
-    else:question=findSynonyms(bot.query)
+    if(search=="root"):question=[PorterStemmer().stem(bot.query).upper()]
+    elif(search=="synonyms"):question=findSynonyms(bot.query)
+    else:question=[bot.query]
     createProgressBar(bot,question,date,search,textList,fileList)
     if(os.path.isfile(bot.output+"/BOT_"+bot.query+"_"+date+".pdf")):
         highlightText(bot,date,question)

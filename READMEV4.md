@@ -5,6 +5,7 @@ The V4 brings several improvements:
 - Progress bar: this shows the progress of the research, instead of having no informations
 - Help button: this opens the documentation, explaining how the tool works
 - Textbox is now (a bit) bigger
+- Added simple search, if we want to look for a specific word and not be bothered by other results
 
 # Bug solving
 
