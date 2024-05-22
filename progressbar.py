@@ -22,8 +22,8 @@ def createProgressBar(bot,keywords,date,search,textList,fileList):
     root.mainloop()
     root.destroy()
 
-def processFiles(testProgress,root,label,bot,keywords,date,search,textList,fileList): # Consider it is not 0 since we checked with the database
-    iterStep=1/bot.numberFiles
+def processFiles(testProgress,root,label,bot,keywords,date,search,textList,fileList): 
+    iterStep=1/bot.numberFiles # Consider it is not 0 since we checked with the database
     progressStep=iterStep
     testProgress.start()
     i=0
