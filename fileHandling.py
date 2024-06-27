@@ -9,11 +9,14 @@ def decrypt_pdf(doc, bot):
     while(True):
         password = simpledialog.askstring("Password", dialogString, show='*')
         if doc.authenticate(password):return doc
+        elif password ==None:return "cancel"
         else:dialogString="Wrong password, please try again or leave the file"
 
 def extract_text_from_pdf(pdf_file_path:str,listKeywords:list[str],filename:str,bot,date:str,search:str):
     doc = fitz.Document(pdf_file_path)
-    if doc.needs_pass: doc=decrypt_pdf(doc,bot)
+    if doc.needs_pass: 
+        doc=decrypt_pdf(doc,bot)
+        if(doc=="cancel"):return ""
     else:doc = fitz.open(doc)
     fontsize=30
     res,outputCreated,outputModified,firstModification,pagesKeyword= "",False,False,True,[]
