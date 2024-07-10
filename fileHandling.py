@@ -46,10 +46,10 @@ def extract_text_from_pdf(pdf_file_path:str,listKeywords:list[str],filename:str,
                 watermark="{filename}-page {pageNumber}".format(filename=filename[:30],pageNumber=page.number+1)
                 output[len(output)-1].insert_text((fitz.get_text_length(watermark, fontname="helv", fontsize=5)/2, 10), watermark)
     if(outputCreated):
-        output.save(bot.output+"/BOT_"+bot.query+"_"+date+".pdf")
+        output.save(bot.output+"/BOT_"+bot.query+"_"+date+".pdf",garbage=4,deflate=True)
         output.close()
     elif(outputModified):
-        output.save(bot.output+"/BOT_"+bot.query+"_"+date+".pdf",incremental=True,encryption=0)
+        output.save(bot.output+"/BOT_"+bot.query+"_"+date+".pdf",incremental=True,encryption=0,deflate=True)
         output.close()
     doc.close()
     return re.sub(r"\n(?![A-Z])", "", res)
