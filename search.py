@@ -12,6 +12,11 @@ import tkinter.messagebox
 from progressbar import createProgressBar
 from fileHandling import findKeyword
 
+try:
+    wordnet.synsets("test")
+except LookupError:
+    print("WordNet not found. Downloading now...")
+    nltk.download('wordnet')
 
 def colorText(canva,listKeywords:list[str],search:str) -> None:
     if(search=="root"):
