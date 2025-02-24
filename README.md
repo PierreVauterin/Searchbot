@@ -5,7 +5,7 @@ This tool is still in active development, if you encounter issues, or if you hav
 
 # Installation
 
-To download the code, you can either clone the repository, which allows you to easily get the updates, or download the ZIP archive (click on the green "Code" button and then "Download ZIP"). Then, you can run the requirements.txt file to install all the libraries. To run it, go in the command prompt, and then type: pip install -r requirements.txt
+To download the code, you can either clone the repository, which allows you to easily get the updates, or download the ZIP archive (click on the green "Code" button and then "Download ZIP"). Then, you can run the requirements.txt file to install all the libraries. To do so, go in the command prompt, navigate to the folder containing the requirements file and then type: pip install -r requirements.txt
 You can now run main.py, and the Searchbot will work correctly!
 
 # How to use it
